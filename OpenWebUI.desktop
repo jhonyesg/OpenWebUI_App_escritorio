@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=OpenWebUI
+Comment=Aplicación de escritorio OpenWebUI
+Exec=npm start --prefix /home/jsuarez/Documents/OpenWebUI_App_escritorio
+Icon=/home/jsuarez/Documents/OpenWebUI_App_escritorio/imagenes_proyecto/icon.png
+Terminal=false
+Type=Application
+Categories=Utility;
