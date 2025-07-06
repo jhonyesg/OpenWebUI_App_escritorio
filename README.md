@@ -2,7 +2,9 @@
 
 Una aplicación Electron moderna que proporciona una interfaz de escritorio para OpenWeb UI con sistema de notificaciones inteligente y configuración avanzada.
 
-La contrui especialmente para Linux, pero como usa Electron con Node es Multiplataforma, aun tiene oprotunidades de mejora, como estoy mas en linux hay app en windows que con python y fullstack he estado contruyendo.
+El programa está hecho principalmente para Linux, pero al usar Electron y Node.js funciona en varios sistemas. Aún necesita mejoras, especialmente en Windows, donde estoy desarrollando otras aplicaciones con Python y tecnologías fullstack.  
+
+(**Es un programa multiplataforma, pero con prioridad en Linux y mejoras pendientes para Windows.**)
 
 ![Panel Principal](imagenes_proyecto/Panel%20Principal.png)
 
