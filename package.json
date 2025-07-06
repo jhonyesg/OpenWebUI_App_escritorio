@@ -1,0 +1,59 @@
+{
+  "name": "poe-desktop-app",
+  "version": "1.0.0",
+  "description": "Aplicación de escritorio para Poe Media Server",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder",
+    "build-linux": "electron-builder --linux",
+    "build-windows": "electron-builder --windows",
+    "build-mac": "electron-builder --mac",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "keywords": [
+    "electron",
+    "desktop",
+    "webapp",
+    "poe",
+    "openwebui"
+  ],
+  "author": "Tu Nombre",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.6.4"
+  },
+  "build": {
+    "appId": "com.poe.desktop",
+    "productName": "Poe Desktop",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "renderer.js",
+      "styles.css",
+      "index.html",
+      "assets/**/*"
+    ],
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.png",
+      "category": "Network"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.icns"
+    }
+  },
+  "dependencies": {
+    "play-sound": "^1.1.6"
+  }
+}

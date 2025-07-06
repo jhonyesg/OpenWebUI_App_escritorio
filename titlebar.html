@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { margin: 0; }
+    .titlebar {
+      width: 100vw;
+      height: 36px;
+      background: #2d3848;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+      -webkit-app-region: drag;
+      user-select: none;
+      font-family: sans-serif;
+      font-size: 1.1rem;
+      box-sizing: border-box;
+    }
+    .titlebar .window-controls {
+      margin-left: auto;
+      display: flex;
+      gap: 0.5rem;
+      -webkit-app-region: none;
+    }
+    .titlebar button {
+      background: #222;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      width: 28px;
+      height: 28px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .titlebar button:hover { background: #00adb5; }
+  </style>
+</head>
+<body>
+  <div class="titlebar" id="customTitlebar">
+    <span>🟢 Poe Desktop</span>
+    <div class="window-controls">
+      <button id="minBtn" title="Minimizar">&#x2013;</button>
+      <button id="maxBtn" title="Maximizar">&#x2610;</button>
+      <button id="closeBtn" title="Cerrar">&#x2715;</button>
+    </div>
+  </div>
+  <script>
+    const { ipcRenderer, remote } = window.require ? window.require('electron') : window.electronAPI;
+    const { BrowserWindow } = window.require ? window.require('@electron/remote') : {};
+    const minBtn = document.getElementById('minBtn');
+    const maxBtn = document.getElementById('maxBtn');
+    const closeBtn = document.getElementById('closeBtn');
+    minBtn.onclick = () => { window.electronAPI.minimize(); };
+    maxBtn.onclick = () => { window.electronAPI.maximize(); };
+    closeBtn.onclick = () => { window.electronAPI.close(); };
+  </script>
+</body>
+</html>

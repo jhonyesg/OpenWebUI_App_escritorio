@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Poe Desktop</title>
+  <style>
+    html, body { height: 100%; margin: 0; padding: 0; background: #2d3848; }
+    body { height: 100vh; display: flex; flex-direction: column; }
+    .titlebar {
+      width: 100vw;
+      height: 36px;
+      background: #2d3848;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      padding: 0 1rem;
+      -webkit-app-region: drag;
+      user-select: none;
+      font-family: sans-serif;
+      font-size: 1.1rem;
+      box-sizing: border-box;
+    }
+    .titlebar .window-controls {
+      margin-left: auto;
+      display: flex;
+      gap: 0.5rem;
+      -webkit-app-region: none;
+    }
+    .titlebar button {
+      background: #222;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      width: 28px;
+      height: 28px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .titlebar button:hover { background: #00adb5; }
+    .titlebar .menu-btn {
+      margin-right: 1rem;
+      background: #00adb5;
+      color: #fff;
+      border: none;
+      border-radius: 3px;
+      padding: 0.3rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      -webkit-app-region: none;
+    }
+    .webview-container {
+      flex: 1;
+      height: 100%;
+      width: 100vw;
+      overflow: hidden;
+      background: #222;
+      display: flex;
+    }
+    webview {
+      border: none;
+      width: 100vw;
+      height: 100%;
+      flex: 1;
+      background: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="titlebar" id="customTitlebar">
+    <span>🟢 Poe Desktop</span>
+    <button class="menu-btn" id="editConfigBtn">Editar configuración</button>
+    <div class="window-controls">
+      <button id="minBtn" title="Minimizar">&#x2013;</button>
+      <button id="maxBtn" title="Maximizar">&#x2610;</button>
+      <button id="closeBtn" title="Cerrar">&#x2715;</button>
+    </div>
+  </div>
+  <div class="webview-container">
+    <webview id="webappView" src="" allowpopups allowfullscreen webpreferences="nativeWindowOpen=yes, contextIsolation=no, nodeIntegration=no, webSecurity=no, partition=persist:poe"></webview>
+  </div>
+  <script>
+    window.electronAPI.getConfig().then(config => {
+      document.getElementById('webappView').src = config.webapp_url;
+      document.body.style.background = config.window_bgcolor || '#2d3848';
+      document.querySelector('.titlebar').style.background = config.window_bgcolor || '#2d3848';
+    });
+    document.getElementById('minBtn').onclick = () => window.electronAPI.minimize();
+    document.getElementById('maxBtn').onclick = () => window.electronAPI.maximize();
+    document.getElementById('closeBtn').onclick = () => window.electronAPI.close();
+    document.getElementById('editConfigBtn').onclick = () => window.electronAPI.openConfigEditor();
+  </script>
+</body>
+</html>

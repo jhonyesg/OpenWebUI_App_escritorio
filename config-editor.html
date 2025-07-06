@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Editor de Configuración</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body { height: 100%; margin: 0; padding: 0; background: #fff; }
+    body { min-height: 600px; display: flex; align-items: center; justify-content: center; }
+    .container { width: 95vw; max-width: 500px; min-height: 400px; margin: 2rem auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 12px #0002; padding: 2rem 1rem; box-sizing: border-box; }
+    h2 { margin-top: 0; color: #222; }
+    label { display: block; margin-top: 1.2rem; font-weight: bold; color: #222; }
+    input[type="text"], input[type="color"] { width: 100%; padding: 0.6rem; border-radius: 4px; border: 1px solid #bbb; background: #f7f7f7; color: #222; font-size: 1rem; box-sizing: border-box; }
+    input[type="file"] { margin-top: 0.5rem; }
+    .row { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .icon-preview, .sound-preview-wrapper { display: flex; justify-content: center; align-items: center; width: 100%; }
+    .icon-preview { margin: 0.5rem auto 0.5rem auto; display: block; max-width: 80px; max-height: 80px; border-radius: 6px; box-shadow: 0 1px 4px #0001; }
+    .sound-preview-wrapper { margin-top: 0.5rem; }
+    .sound-preview { max-width: 100%; margin: 0 auto; display: block; }
+    button[type="submit"] { background: #00adb5; color: #fff; border: none; border-radius: 4px; padding: 0.7rem 2rem; font-size: 1rem; margin-top: 2rem; cursor: pointer; width: 100%; }
+    button[type="submit"]:hover { background: #008891; }
+    .msg { margin: 1rem 0; color: #00b894; }
+    .error { color: #ff4e4e; }
+    .pattern-item { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem; padding: 0.5rem; border: 1px solid #e0e0e0; border-radius: 4px; background: white; }
+    .pattern-item input[type="text"] { flex: 1; padding: 0.3rem; border: 1px solid #ccc; border-radius: 3px; font-size: 0.9rem; }
+    .pattern-item select { padding: 0.3rem; border: 1px solid #ccc; border-radius: 3px; font-size: 0.9rem; }
+    .pattern-item input[type="checkbox"] { margin-right: 0.3rem; }
+    .pattern-item button { background: #dc3545; color: white; border: none; padding: 0.3rem 0.6rem; border-radius: 3px; cursor: pointer; font-size: 0.8rem; }
+    .pattern-item button:hover { background: #c82333; }
+    #add_pattern_btn:hover { background: #218838; }
+    @media (max-width: 600px) {
+      .container { padding: 1rem 0.2rem; }
+      .row { flex-direction: column; gap: 0.2rem; }
+      button[type="submit"] { font-size: 1rem; padding: 0.7rem 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Ajustes</h2>
+    <form id="configForm">
+      <label>Nombre de la aplicación
+        <input type="text" id="app_title" required style="margin-bottom:0.5rem;" placeholder="OpenWeb UI" />
+      </label>
+      <label>URL de la WebApp
+        <input type="text" id="webapp_url" required style="margin-bottom:0.5rem;" placeholder="https://poe.mediaserver.com.co" />
+      </label>
+      <label>Icono de la app
+        <div class="row">
+          <input type="text" id="icon" placeholder="Ruta del icono (png)" />
+          <input type="file" id="icon_file" accept="image/png,image/x-icon,image/*" />
+        </div>
+        <div class="icon-preview-wrapper"><img id="icon_preview" class="icon-preview" src="" alt="icon preview" /></div>
+      </label>
+      <label>Sonido de notificación
+        <div class="row">
+          <input type="text" id="notification_sound" placeholder="Ruta del sonido (wav, mp3)" />
+          <input type="file" id="sound_file" accept="audio/*" />
+        </div>
+        <div class="sound-preview-wrapper"><audio id="sound_preview" class="sound-preview" controls style="display:none;"></audio></div>
+      </label>
+      <label>Resolución de la ventana principal
+        <div class="row">
+          <select id="resolution_select" style="flex:2; min-width:120px;">
+            <option value="1200x800">1200 x 800 (Default)</option>
+            <option value="1920x1080">1920 x 1080 (Full HD)</option>
+            <option value="1366x768">1366 x 768</option>
+            <option value="1440x900">1440 x 900</option>
+            <option value="1600x900">1600 x 900</option>
+            <option value="1280x720">1280 x 720 (HD)</option>
+            <option value="custom">Personalizado...</option>
+          </select>
+          <input type="number" id="custom_width" min="400" max="3840" placeholder="Ancho" style="flex:1; display:none;" />
+          <input type="number" id="custom_height" min="300" max="2160" placeholder="Alto" style="flex:1; display:none;" />
+        </div>
+      </label>
+      <label>Patrones de notificación
+        <div style="font-size: 0.9em; color: #666; margin-bottom: 0.5rem;">
+          Configura qué mensajes deben reproducir sonido de notificación
+        </div>
+        <div id="notification_patterns_container" style="border: 1px solid #ddd; border-radius: 4px; padding: 1rem; background: #f9f9f9; max-height: 200px; overflow-y: auto;">
+          <!-- Los patrones se cargarán aquí dinámicamente -->
+        </div>
+        <div style="margin-top: 0.5rem;">
+          <button type="button" id="add_pattern_btn" style="background: #28a745; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-size: 0.9rem;">
+            + Agregar patrón
+          </button>
+        </div>
+      </label>
+      <div class="msg" id="msg"></div>
+      <button type="submit">Guardar y recargar</button>
+    </form>
+  </div>
+  <script>
+    const { ipcRenderer } = window.require ? window.require('electron') : window.electronAPI;
+    let config = {};
+    
+    // Función para renderizar patrones de notificación
+    function renderNotificationPatterns() {
+      const container = document.getElementById('notification_patterns_container');
+      container.innerHTML = '';
+      
+      const patterns = config.notification_patterns || [];
+      
+      patterns.forEach((pattern, index) => {
+        const patternDiv = document.createElement('div');
+        patternDiv.className = 'pattern-item';
+        patternDiv.innerHTML = `
+          <input type="checkbox" ${pattern.enabled ? 'checked' : ''} onchange="togglePattern(${index})" />
+          <input type="text" value="${pattern.pattern}" onchange="updatePattern(${index}, 'pattern', this.value)" placeholder="Mensaje a detectar" />
+          <select onchange="updatePattern(${index}, 'type', this.value)">
+            <option value="exact" ${pattern.type === 'exact' ? 'selected' : ''}>Exacto</option>
+            <option value="contains" ${pattern.type === 'contains' ? 'selected' : ''}>Contiene</option>
+            <option value="regex" ${pattern.type === 'regex' ? 'selected' : ''}>Regex</option>
+          </select>
+          <button onclick="removePattern(${index})" title="Eliminar patrón">×</button>
+        `;
+        container.appendChild(patternDiv);
+      });
+    }
+    
+    // Funciones para manejar patrones
+    window.togglePattern = function(index) {
+      config.notification_patterns[index].enabled = !config.notification_patterns[index].enabled;
+    };
+    
+    window.updatePattern = function(index, field, value) {
+      config.notification_patterns[index][field] = value;
+    };
+    
+    window.removePattern = function(index) {
+      config.notification_patterns.splice(index, 1);
+      renderNotificationPatterns();
+    };
+    
+    // Agregar nuevo patrón
+    document.getElementById('add_pattern_btn').onclick = function() {
+      if (!config.notification_patterns) {
+        config.notification_patterns = [];
+      }
+      config.notification_patterns.push({
+        pattern: '',
+        enabled: true,
+        type: 'exact'
+      });
+      renderNotificationPatterns();
+    };
+    
+    // Cargar configuración inicial
+    ipcRenderer.invoke('get-config').then(cfg => {
+      config = JSON.parse(cfg);
+      document.getElementById('app_title').value = config.app_title || 'OpenWeb UI';
+      document.getElementById('webapp_url').value = config.webapp_url || '';
+      document.getElementById('icon').value = config.icon || '';
+      document.getElementById('icon_preview').src = config.icon ? config.icon : '';
+      document.getElementById('notification_sound').value = config.notification_sound || '';
+      if (config.notification_sound) {
+        document.getElementById('sound_preview').src = config.notification_sound;
+        document.getElementById('sound_preview').style.display = '';
+      }
+      
+      // Renderizar patrones de notificación
+      renderNotificationPatterns();
+      
+      // Resolución
+      let res = (config.window_size || '1200x800').split('x');
+      let found = false;
+      for (const opt of document.getElementById('resolution_select').options) {
+        if (opt.value === config.window_size) { found = true; break; }
+      }
+      if (found) {
+        document.getElementById('resolution_select').value = config.window_size;
+        document.getElementById('custom_width').style.display = 'none';
+        document.getElementById('custom_height').style.display = 'none';
+      } else {
+        document.getElementById('resolution_select').value = 'custom';
+        document.getElementById('custom_width').style.display = '';
+        document.getElementById('custom_height').style.display = '';
+        document.getElementById('custom_width').value = res[0];
+        document.getElementById('custom_height').value = res[1];
+      }
+    });
+    // Icono: vista previa y carga
+    document.getElementById('icon_file').onchange = async e => {
+      const file = e.target.files[0];
+      if (file) {
+        // Copiar a assets y actualizar campo
+        const relativePath = await ipcRenderer.invoke('copy-asset', file.path, 'icon');
+        document.getElementById('icon').value = relativePath;
+        document.getElementById('icon_preview').src = relativePath;
+      }
+    };
+    // Sonido: vista previa y carga
+    document.getElementById('sound_file').onchange = async e => {
+      const file = e.target.files[0];
+      if (file) {
+        const relativePath = await ipcRenderer.invoke('copy-asset', file.path, 'sound');
+        document.getElementById('notification_sound').value = relativePath;
+        document.getElementById('sound_preview').src = relativePath;
+        document.getElementById('sound_preview').style.display = '';
+      }
+    };
+    // Cambiar visibilidad de campos personalizados
+    document.getElementById('resolution_select').onchange = function() {
+      if (this.value === 'custom') {
+        document.getElementById('custom_width').style.display = '';
+        document.getElementById('custom_height').style.display = '';
+      } else {
+        document.getElementById('custom_width').style.display = 'none';
+        document.getElementById('custom_height').style.display = 'none';
+      }
+    };
+    document.getElementById('configForm').onsubmit = e => {
+      e.preventDefault();
+      const newConfig = {
+        app_title: document.getElementById('app_title').value,
+        webapp_url: document.getElementById('webapp_url').value,
+        icon: document.getElementById('icon').value,
+        notification_sound: document.getElementById('notification_sound').value,
+        notification_patterns: config.notification_patterns || [],
+        window_size: (function() {
+          const sel = document.getElementById('resolution_select').value;
+          if (sel === 'custom') {
+            const w = document.getElementById('custom_width').value || 1200;
+            const h = document.getElementById('custom_height').value || 800;
+            return `${w}x${h}`;
+          } else {
+            return sel;
+          }
+        })()
+      };
+      
+      console.log('Guardando configuración:', newConfig);
+      
+      ipcRenderer.invoke('save-config', JSON.stringify(newConfig, null, 2)).then(ok => {
+        if (ok) {
+          document.getElementById('msg').textContent = '¡Guardado! Recargando...';
+          document.getElementById('msg').className = 'msg';
+          setTimeout(() => { ipcRenderer.invoke('reload-app'); }, 1000);
+        } else {
+          document.getElementById('msg').textContent = 'Error al guardar.';
+          document.getElementById('msg').className = 'msg error';
+        }
+      });
+    };
+  </script>
+</body>
+</html>

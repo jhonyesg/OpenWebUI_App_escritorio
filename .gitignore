@@ -1,0 +1,23 @@
+# Archivos y carpetas a ignorar por git
+node_modules/
+dist/
+.env
+.DS_Store
+*.log
+# Electron build artifacts
+*.asar
+*.bin
+*.exe
+*.app
+*.dmg
+*.deb
+*.rpm
+*.snap
+*.msi
+*.dll
+*.so
+*.zip
+*.tar.gz
+*.tgz
+# VSCode
+.vscode/

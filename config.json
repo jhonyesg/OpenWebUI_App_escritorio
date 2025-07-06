@@ -1,0 +1,35 @@
+{
+  "app_title": "OpenWeb UI",
+  "webapp_url": "https://poe.mediaserver.com.co",
+  "icon": "assets/icon.png",
+  "notification_sound": "assets/notify.wav",
+  "window_size": "1200x800",
+  "notification_patterns": [
+    {
+      "pattern": "¡Ajustes guardados correctamente!",
+      "enabled": true,
+      "type": "exact"
+    },
+    {
+      "pattern": "Ajustes de API OpenAI actualizados",
+      "enabled": true,
+      "type": "exact"
+    },
+    {
+      "pattern": "Conexión al servidor verificada",
+      "enabled": true,
+      "type": "exact"
+    },
+    {
+      "pattern": "Configuration saved successfully",
+      "enabled": true,
+      "type": "exact"
+    },
+    {
+      "pattern": "Settings updated",
+      "enabled": true,
+      "type": "exact"
+    }
+  ],
+  "notification_cooldown": 3000
+}
