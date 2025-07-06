@@ -3,7 +3,6 @@
   "webapp_url": "https://poe.mediaserver.com.co",
   "icon": "assets/icon.png",
   "notification_sound": "assets/notify.wav",
-  "window_size": "1200x800",
   "notification_patterns": [
     {
       "pattern": "¡Ajustes guardados correctamente!",
@@ -31,5 +30,5 @@
       "type": "exact"
     }
   ],
-  "notification_cooldown": 3000
+  "window_size": "1200x800"
 }
