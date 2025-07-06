@@ -2,7 +2,7 @@
 
 Una aplicación Electron moderna que proporciona una interfaz de escritorio para OpenWeb UI con sistema de notificaciones inteligente y configuración avanzada.
 
-![OpenWeb UI Desktop](imagenes_proyecto/screenshot_principal.png)
+![Panel Principal](imagenes_proyecto/Panel%20Principal.png)
 
 ## 🚀 Características
 
@@ -31,8 +31,8 @@ Una aplicación Electron moderna que proporciona una interfaz de escritorio para
 
 ### Clonar e instalar
 ```bash
-git clone https://github.com/tu-usuario/openwebui-desktop.git
-cd openwebui-desktop
+git clone https://github.com/jhonyesg/OpenWebUI_App_escritorio.git
+cd OpenWebUI_App_escritorio
 npm install
 ```
 
@@ -84,7 +84,7 @@ La aplicación incluye un editor visual de configuración accesible desde:
 - Menú: `Ajustes > Abrir ajustes`
 - Atajo de teclado: `Ctrl+E` (Linux/Windows) o `Cmd+E` (macOS)
 
-![Editor de configuración](imagenes_proyecto/config_editor.png)
+![Menu Ajustes](imagenes_proyecto/Menu%20Ajustes.png)
 
 ## 🔔 Sistema de Notificaciones
 
@@ -157,23 +157,26 @@ Formatos soportados: WAV, MP3, OGG, AAC
 
 ## 📸 Capturas de pantalla
 
-### Pantalla principal
-![Pantalla principal](imagenes_proyecto/pantalla_principal.png)
+### Panel Principal
+![Panel Principal](imagenes_proyecto/Panel%20Principal.png)
 
-### Editor de configuración
-![Editor de configuración](imagenes_proyecto/editor_configuracion.png)
+### Menú de Ajustes
+![Menu Ajustes](imagenes_proyecto/Menu%20Ajustes.png)
 
-### Sistema de notificaciones en acción
-![Notificaciones](imagenes_proyecto/notificaciones.png)
+### Menú de Opciones de la App con Electron
+![Menu de Opciones](imagenes_proyecto/Menu%20de%20Opcioens%20de%20la%20app%20con%20electron.png)
 
-### Menú de la aplicación
-![Menú](imagenes_proyecto/menu_aplicacion.png)
+### Menú de Desarrollador
+![Menu de Desarrollador](imagenes_proyecto/Menu%20de%20Desarrolador%20inpeccion.png)
+
+### Botón de Prueba de Sonido
+![Botón de Prueba de Sonido](imagenes_proyecto/Boton%20de%20prueba%20de%20SOnido.png)
 
 ## 🛠️ Desarrollo
 
 ### Estructura del proyecto
 ```
-openwebui-desktop/
+OpenWebUI_App_escritorio/
 ├── main.js              # Proceso principal de Electron
 ├── preload.js           # Script de precarga
 ├── config.json          # Archivo de configuración
@@ -256,11 +259,11 @@ Este proyecto está licenciado bajo una licencia libre con atribución requerida
 
 A continuación se documentan las imágenes incluidas en la carpeta `imagenes_proyecto`:
 
-- **Botón de prueba de sonido**: Representa el diseño del botón utilizado para probar sonidos en la aplicación. Archivo: `imagenes_proyecto/Boton de prueba de SOnido.png`
-- **Captura de pantalla del área de selección**: Muestra una selección específica dentro de la aplicación. Archivo: `imagenes_proyecto/Captura de pantalla_área-de-selección_20250706094117.png`
-- **Menú de ajustes**: Ilustra las opciones disponibles en el menú de configuración. Archivo: `imagenes_proyecto/Menu Ajustes.png`
-- **Menú de opciones de la app con Electron**: Presenta las opciones principales de la aplicación desarrollada con Electron. Archivo: `imagenes_proyecto/Menu de Opcioens de la app con electron.png`
-- **Panel principal**: Muestra la interfaz principal de la aplicación. Archivo: `imagenes_proyecto/Panel Principal.png`
+- **Panel Principal**: Muestra la interfaz principal de la aplicación. Archivo: `imagenes_proyecto/Panel Principal.png`
+- **Menú de Ajustes**: Ilustra las opciones disponibles en el menú de configuración. Archivo: `imagenes_proyecto/Menu Ajustes.png`
+- **Menú de Opciones de la App con Electron**: Presenta las opciones principales de la aplicación desarrollada con Electron. Archivo: `imagenes_proyecto/Menu de Opcioens de la app con electron.png`
+- **Menú de Desarrollador**: Muestra el menú de inspección para desarrolladores. Archivo: `imagenes_proyecto/Menu de Desarrolador inpeccion.png`
+- **Botón de Prueba de Sonido**: Representa el diseño del botón utilizado para probar sonidos en la aplicación. Archivo: `imagenes_proyecto/Boton de prueba de SOnido.png`
 
 ## 🙏 Agradecimientos
 
@@ -272,9 +275,9 @@ A continuación se documentan las imágenes incluidas en la carpeta `imagenes_pr
 
 ¿Tienes preguntas o problemas? 
 
-- 🐛 [Reportar un bug](https://github.com/tu-usuario/openwebui-desktop/issues)
-- 💡 [Solicitar una característica](https://github.com/tu-usuario/openwebui-desktop/issues)
-- 📧 Email: tu-email@ejemplo.com
+- 🐛 [Reportar un bug](https://github.com/jhonyesg/OpenWebUI_App_escritorio/issues)
+- 💡 [Solicitar una característica](https://github.com/jhonyesg/OpenWebUI_App_escritorio/issues)
+- 📧 Email: jsuarez@mediaclouding.com
 
 ---
 
