@@ -26,15 +26,12 @@ function loadConfig() {
     if (config.window_size) WINDOW_SIZE = config.window_size;
     if (config.notification_patterns) NOTIFICATION_PATTERNS = config.notification_patterns;
     if (config.notification_cooldown) NOTIFICATION_COOLDOWN = config.notification_cooldown;
-    console.log('[PoeDesktop] Configuración cargada:', { WEBAPP_URL, ICON_PATH, NOTIFY_SOUND, APP_TITLE, WINDOW_SIZE, patterns: NOTIFICATION_PATTERNS.length, cooldown: NOTIFICATION_COOLDOWN });
   } catch (e) {
     console.warn('[PoeDesktop] No se pudo leer config.json, usando valores por defecto');
   }
 }
 
 loadConfig();
-
-console.log('[PoeDesktop] main.js iniciado');
 
 // Función para crear un hash simple del mensaje
 function createMessageHash(message) {
@@ -73,25 +70,18 @@ function cleanupOldNotifications() {
   keysToDelete.forEach(key => {
     recentNotifications.delete(key);
   });
-  
-  if (keysToDelete.length > 0) {
-    console.log(`[PoeDesktop] Limpiadas ${keysToDelete.length} notificaciones antiguas`);
-  }
 }
 
 // Función para verificar si un mensaje debe disparar notificación
 function shouldNotify(message) {
   if (!message || typeof message !== 'string') {
-    console.log('[PoeDesktop] Mensaje inválido para verificar notificación:', message);
     return false;
   }
   
   const trimmedMessage = message.trim();
-  console.log('[PoeDesktop] Verificando mensaje para notificación:', JSON.stringify(trimmedMessage));
   
   for (const pattern of NOTIFICATION_PATTERNS) {
     if (!pattern.enabled) {
-      console.log('[PoeDesktop] Patrón deshabilitado:', pattern.pattern);
       continue;
     }
     
@@ -112,81 +102,66 @@ function shouldNotify(message) {
     }
     
     if (matches) {
-      console.log('[PoeDesktop] ✓ Mensaje coincide con patrón:', pattern.pattern, '(tipo:', pattern.type + ')');
       return true;
     }
   }
   
-  console.log('[PoeDesktop] ✗ Mensaje no coincide con ningún patrón habilitado');
   return false;
 }
 
 // Función para reproducir sonido con múltiples métodos
 function playNotificationSound(soundFile, callback) {
-  console.log('[PoeDesktop] Intentando reproducir sonido:', soundFile);
   
   // Método 1: Usar paplay (PulseAudio)
   const tryPaplay = () => {
-    console.log('[PoeDesktop] Intentando con paplay...');
     const { spawn } = require('child_process');
     const paplay = spawn('paplay', [soundFile]);
     
     paplay.on('close', (code) => {
       if (code === 0) {
-        console.log('[PoeDesktop] Sonido reproducido exitosamente con paplay');
         callback(null);
       } else {
-        console.log('[PoeDesktop] paplay falló, intentando con aplay...');
         tryAplay();
       }
     });
     
     paplay.on('error', (err) => {
-      console.log('[PoeDesktop] Error con paplay:', err.message);
       tryAplay();
     });
   };
   
   // Método 2: Usar aplay (ALSA)
   const tryAplay = () => {
-    console.log('[PoeDesktop] Intentando con aplay...');
     const { spawn } = require('child_process');
     const aplay = spawn('aplay', [soundFile]);
     
     aplay.on('close', (code) => {
       if (code === 0) {
-        console.log('[PoeDesktop] Sonido reproducido exitosamente con aplay');
         callback(null);
       } else {
-        console.log('[PoeDesktop] aplay falló, intentando con ffplay...');
         tryFfplay();
       }
     });
     
     aplay.on('error', (err) => {
-      console.log('[PoeDesktop] Error con aplay:', err.message);
       tryFfplay();
     });
   };
   
   // Método 3: Usar ffplay
   const tryFfplay = () => {
-    console.log('[PoeDesktop] Intentando con ffplay...');
     const { spawn } = require('child_process');
     const ffplay = spawn('ffplay', ['-nodisp', '-autoexit', '-volume', '80', soundFile]);
     
     ffplay.on('close', (code) => {
       if (code === 0) {
-        console.log('[PoeDesktop] Sonido reproducido exitosamente con ffplay');
         callback(null);
       } else {
-        console.log('[PoeDesktop] ffplay falló, usando fallback HTML...');
         callback(new Error('All sound players failed'));
       }
     });
     
     ffplay.on('error', (err) => {
-      console.log('[PoeDesktop] Error con ffplay:', err.message);
       callback(new Error('All sound players failed'));
     });
   };
@@ -208,7 +183,6 @@ const play = (() => {
       },
       timeout: 3000
     });
-    console.log('[PoeDesktop] play-sound configurado con paplay');
     return p;
   } catch (e) {
     console.error('[PoeDesktop] Error inicializando play-sound:', e);
@@ -217,19 +191,14 @@ const play = (() => {
 })();
 
 ipcMain.on('notification-sound', (event, message) => {
-  console.log('[PoeDesktop] Evento IPC notification-sound recibido con mensaje:', message);
-  
   // Verificar si el mensaje debe disparar la notificación
   if (!shouldNotify(message)) {
-    console.log('[PoeDesktop] Mensaje filtrado, no se reproducirá sonido');
     return;
   }
   
   // Crear clave única para el mensaje usando hash
   const messageKey = createMessageHash(message);
   const now = Date.now();
-  
-  console.log(`[PoeDesktop] Hash del mensaje: ${messageKey}`);
   
   // Limpiar notificaciones antiguas
   cleanupOldNotifications();
@@ -240,15 +209,12 @@ ipcMain.on('notification-sound', (event, message) => {
     const timeSinceLastNotification = now - lastNotification;
     
     if (timeSinceLastNotification < NOTIFICATION_COOLDOWN) {
-      console.log(`[PoeDesktop] ⏰ Notificación duplicada ignorada (hash: ${messageKey}, ${timeSinceLastNotification}ms desde la última)`);
       return;
     }
   }
   
   // Registrar esta notificación
   recentNotifications.set(messageKey, now);
-  
-  console.log(`[PoeDesktop] ✓ Mensaje aprobado para notificación (hash: ${messageKey}), reproduciendo sonido:`, NOTIFY_SOUND);
   
   // Verificar que el archivo de sonido existe
   if (!fs.existsSync(NOTIFY_SOUND)) {
@@ -259,13 +225,11 @@ ipcMain.on('notification-sound', (event, message) => {
   // Usar la función personalizada de reproducción
   playNotificationSound(NOTIFY_SOUND, (err) => {
     if (err) {
-      console.log('[PoeDesktop] Todos los reproductores fallaron, usando fallback HTML...');
       fallbackSound();
     }
   });
   
   function fallbackSound() {
-    console.log('[PoeDesktop] Usando fallback para sonido');
     // Fallback: ventana oculta
     const soundWin = new BrowserWindow({ 
       show: false, 
@@ -317,7 +281,7 @@ ipcMain.on('notification-sound', (event, message) => {
     
     soundWin.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(htmlContent)}`);
     soundWin.on('closed', () => {
-      console.log('[PoeDesktop] Ventana de sonido cerrada');
+      // Ventana cerrada
     });
     
     // Cerrar la ventana automáticamente después de 3 segundos
@@ -359,6 +323,37 @@ function createWindow() {
   mainWindow.loadURL(WEBAPP_URL, {
     userAgent: 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
   });
+  
+  // Configurar descargas automáticas a la carpeta Descargas
+  const os = require('os');
+  const downloadsPath = path.join(os.homedir(), 'Descargas');
+  
+  mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
+    // Establecer la ruta de descarga automáticamente
+    const filename = item.getFilename();
+    const downloadPath = path.join(downloadsPath, filename);
+    item.setSavePath(downloadPath);
+    
+    // Opcional: mostrar progreso en la barra de tareas (Linux)
+    item.on('updated', (event, state) => {
+      if (state === 'interrupted') {
+        console.log('[PoeDesktop] Descarga interrumpida');
+      } else if (state === 'progressing') {
+        if (item.isPaused()) {
+          console.log('[PoeDesktop] Descarga pausada');
+        }
+      }
+    });
+    
+    item.once('done', (event, state) => {
+      if (state === 'completed') {
+        console.log(`[PoeDesktop] Descarga completada: ${downloadPath}`);
+      } else {
+        console.log(`[PoeDesktop] Descarga falló: ${state}`);
+      }
+    });
+  });
+  
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
   });
@@ -398,6 +393,54 @@ function createWindow() {
   // Limpiar referencia cuando se cierre la ventana
   mainWindow.on('closed', () => {
     mainWindow = null;
+  });
+}
+
+// Función para limpiar cookies y datos de la sesión
+function clearCookiesAndData() {
+  if (!mainWindow) return;
+  
+  const { dialog } = require('electron');
+  
+  // Mostrar diálogo de confirmación
+  dialog.showMessageBox(mainWindow, {
+    type: 'question',
+    title: 'Borrar cookies y datos',
+    message: '¿Estás seguro de que quieres borrar todas las cookies y datos de navegación?',
+    detail: 'Esta acción cerrará la sesión actual y tendrás que volver a iniciar sesión.',
+    buttons: ['Cancelar', 'Borrar datos'],
+    defaultId: 0,
+    cancelId: 0
+  }).then(result => {
+    if (result.response === 1) { // Usuario confirmó
+      // Limpiar cookies y datos de la sesión
+      mainWindow.webContents.session.clearStorageData({
+        storages: [
+          'cookies',
+          'localstorage',
+          'sessionstorage',
+          'websql',
+          'indexdb',
+          'serviceworkers',
+          'cachestorage'
+        ]
+      }).then(() => {
+        // Mostrar mensaje de éxito
+        dialog.showMessageBox(mainWindow, {
+          type: 'info',
+          title: 'Datos borrados',
+          message: 'Las cookies y datos de navegación han sido borrados exitosamente.',
+          detail: 'La página se recargará automáticamente.',
+          buttons: ['OK']
+        }).then(() => {
+          // Recargar la página
+          mainWindow.reload();
+        });
+      }).catch(err => {
+        console.error('[PoeDesktop] Error al borrar datos:', err);
+        dialog.showErrorBox('Error', 'No se pudieron borrar los datos de navegación.');
+      });
+    }
   });
 }
 
@@ -582,6 +625,14 @@ function createMenu() {
           click: () => {
             openConfigEditor();
           }
+        },
+        { type: 'separator' },
+        {
+          label: 'Borrar cookies y datos',
+          accelerator: 'CmdOrCtrl+Shift+Delete',
+          click: () => {
+            clearCookiesAndData();
+          }
         }
       ]
     }
@@ -613,8 +664,6 @@ app.whenReady().then(() => {
               el.dataset.notifSent = '1';
               // Enviar mensaje al preload para reproducir sonido personalizado
               window.postMessage({ type: 'custom-notification-sound', debug: el.innerText }, '*');
-              // Para depuración
-              console.log('[PoeDesktop] Mensaje flotante detectado y postMessage enviado:', el.innerText);
             }
           });
         });
