@@ -257,19 +257,16 @@ ipcMain.on('notification-sound', (event, message) => {
             audio.volume = 0.8;
             audio.addEventListener('canplaythrough', () => {
               audio.play().then(() => {
-                console.log('Audio reproducido con éxito');
                 setTimeout(() => {
                   if (window.close) window.close();
                 }, 1500);
               }).catch(e => {
-                console.error('Error reproduciendo audio:', e);
                 setTimeout(() => {
                   if (window.close) window.close();
                 }, 500);
               });
             });
             audio.addEventListener('error', (e) => {
-              console.error('Error cargando audio:', e);
               setTimeout(() => {
                 if (window.close) window.close();
               }, 500);
@@ -326,7 +323,39 @@ function createWindow() {
   
   // Configurar descargas automáticas a la carpeta Descargas
   const os = require('os');
-  const downloadsPath = path.join(os.homedir(), 'Descargas');
+  // Intentar detectar la carpeta de descargas en diferentes configuraciones de Linux
+  let downloadsPath;
+  try {
+    // Método 1: XDG user dirs
+    const { execSync } = require('child_process');
+    try {
+      // Intentar obtener la carpeta mediante xdg-user-dir
+      downloadsPath = execSync('xdg-user-dir DOWNLOAD', { encoding: 'utf8' }).trim();
+    } catch (e) {
+      // Fallback a la carpeta predeterminada
+      const homedir = os.homedir();
+      // Comprobar nombres comunes de carpeta de descargas
+      const possibleNames = ['Descargas', 'Downloads'];
+      for (const name of possibleNames) {
+        const possiblePath = path.join(homedir, name);
+        if (fs.existsSync(possiblePath)) {
+          downloadsPath = possiblePath;
+          break;
+        }
+      }
+      // Si no se encontró ninguna carpeta, usar Descargas en el directorio del usuario
+      if (!downloadsPath) {
+        downloadsPath = path.join(homedir, 'Descargas');
+        // Crear la carpeta si no existe
+        if (!fs.existsSync(downloadsPath)) {
+          fs.mkdirSync(downloadsPath, { recursive: true });
+        }
+      }
+    }
+  } catch (e) {
+    // Fallback final
+    downloadsPath = path.join(os.homedir(), 'Descargas');
+  }
   
   mainWindow.webContents.session.on('will-download', (event, item, webContents) => {
     // Establecer la ruta de descarga automáticamente
@@ -334,22 +363,31 @@ function createWindow() {
     const downloadPath = path.join(downloadsPath, filename);
     item.setSavePath(downloadPath);
     
-    // Opcional: mostrar progreso en la barra de tareas (Linux)
+    // Establecer progreso sin mensajes de consola
     item.on('updated', (event, state) => {
-      if (state === 'interrupted') {
-        console.log('[PoeDesktop] Descarga interrumpida');
-      } else if (state === 'progressing') {
-        if (item.isPaused()) {
-          console.log('[PoeDesktop] Descarga pausada');
-        }
-      }
+      // Manejo silencioso de eventos de descarga
     });
     
     item.once('done', (event, state) => {
       if (state === 'completed') {
-        console.log(`[PoeDesktop] Descarga completada: ${downloadPath}`);
-      } else {
-        console.log(`[PoeDesktop] Descarga falló: ${state}`);
+        // Mostrar notificación visual al completar
+        mainWindow.webContents.executeJavaScript(`
+          const notification = document.createElement('div');
+          notification.style.position = 'fixed';
+          notification.style.bottom = '20px';
+          notification.style.right = '20px';
+          notification.style.backgroundColor = '#4CAF50';
+          notification.style.color = 'white';
+          notification.style.padding = '12px 24px';
+          notification.style.borderRadius = '4px';
+          notification.style.zIndex = '9999';
+          notification.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+          notification.style.transition = 'opacity 0.3s';
+          notification.innerText = 'Descarga completada: ${path.basename(downloadPath)}';
+          document.body.appendChild(notification);
+          setTimeout(() => notification.style.opacity = '0', 3000);
+          setTimeout(() => notification.remove(), 3300);
+        `);
       }
     });
   });
@@ -400,48 +438,51 @@ function createWindow() {
 function clearCookiesAndData() {
   if (!mainWindow) return;
   
-  const { dialog } = require('electron');
-  
-  // Mostrar diálogo de confirmación
-  dialog.showMessageBox(mainWindow, {
-    type: 'question',
-    title: 'Borrar cookies y datos',
-    message: '¿Estás seguro de que quieres borrar todas las cookies y datos de navegación?',
-    detail: 'Esta acción cerrará la sesión actual y tendrás que volver a iniciar sesión.',
-    buttons: ['Cancelar', 'Borrar datos'],
-    defaultId: 0,
-    cancelId: 0
-  }).then(result => {
-    if (result.response === 1) { // Usuario confirmó
-      // Limpiar cookies y datos de la sesión
-      mainWindow.webContents.session.clearStorageData({
+  // Limpiar cookies y datos directamente sin preguntar
+  try {
+    // Limpiar todas las cookies
+    const session = mainWindow.webContents.session;
+    session.clearStorageData({ storages: ['cookies'] });
+    
+    // Limpiar cache
+    session.clearCache().then(() => {
+      // Limpiar otros datos de almacenamiento
+      session.clearStorageData({
         storages: [
-          'cookies',
           'localstorage',
-          'sessionstorage',
-          'websql',
+          'sessionstorage', 
+          'websql', 
           'indexdb',
-          'serviceworkers',
           'cachestorage'
         ]
       }).then(() => {
-        // Mostrar mensaje de éxito
-        dialog.showMessageBox(mainWindow, {
-          type: 'info',
-          title: 'Datos borrados',
-          message: 'Las cookies y datos de navegación han sido borrados exitosamente.',
-          detail: 'La página se recargará automáticamente.',
-          buttons: ['OK']
-        }).then(() => {
-          // Recargar la página
-          mainWindow.reload();
-        });
-      }).catch(err => {
-        console.error('[PoeDesktop] Error al borrar datos:', err);
-        dialog.showErrorBox('Error', 'No se pudieron borrar los datos de navegación.');
+        // Notificar visualmente que se completó
+        mainWindow.webContents.executeJavaScript(`
+          // Crear notificación visual
+          const notification = document.createElement('div');
+          notification.style.position = 'fixed';
+          notification.style.bottom = '20px';
+          notification.style.right = '20px';
+          notification.style.backgroundColor = '#4CAF50';
+          notification.style.color = 'white';
+          notification.style.padding = '12px 24px';
+          notification.style.borderRadius = '4px';
+          notification.style.zIndex = '9999';
+          notification.style.boxShadow = '0 2px 4px rgba(0,0,0,0.3)';
+          notification.style.transition = 'opacity 0.3s';
+          notification.innerText = 'Cookies y datos de navegación eliminados. Recargando...';
+          document.body.appendChild(notification);
+          
+          // Esperar 2 segundos y recargar
+          setTimeout(() => {
+            window.location.reload();
+          }, 2000);
+        `);
       });
-    }
-  });
+    });
+  } catch (err) {
+    console.error('[PoeDesktop] Error al borrar datos:', err);
+  }
 }
 
 // Función para abrir el editor de configuración

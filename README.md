@@ -8,6 +8,48 @@ El programa está hecho principalmente para Linux, pero al usar Electron y Node.
 
 ![Panel Principal](imagenes_proyecto/Panel%20Principal.png)
 
+## 📦 Instalación
+
+### Opción 1: Construir desde código fuente (Recomendado)
+
+```bash
+# Clonar el repositorio
+git clone [tu-repositorio]
+cd OpenWebUI_App_escritorio
+
+# Instalar dependencias
+npm install
+
+# Construir paquete .deb para Linux
+./build-deb.sh
+
+# Instalar el paquete generado
+./install-deb.sh
+```
+
+### Opción 2: Ejecutar en modo desarrollo
+
+```bash
+# Instalar dependencias
+npm install
+
+# Ejecutar en modo desarrollo
+npm start
+
+# O con herramientas de desarrollo
+npm run dev
+```
+
+## 🔧 Construcción de Paquetes
+
+Este proyecto incluye scripts para generar paquetes de instalación:
+
+- `./build-deb.sh` - Genera paquete .deb para Linux (Ubuntu/Debian)
+- `./install-deb.sh` - Instala el paquete .deb generado
+- `./update-app.sh` - Actualiza una instalación existente
+
+**Nota**: Los archivos .deb no se incluyen en el repositorio debido a su gran tamaño (>70MB). Debes construirlos localmente.
+
 ## 🚀 Características
 
 ### 🔔 Sistema de Notificaciones Inteligente

@@ -1,23 +1,81 @@
 # Archivos y carpetas a ignorar por git
+
+# Dependencias
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Carpetas de construcción y distribución
 dist/
-.env
-.DS_Store
-*.log
-# Electron build artifacts
-*.asar
-*.bin
-*.exe
-*.app
-*.dmg
+build-output/
+out/
+release/
+
+# Archivos de paquetes (todos los tipos)
 *.deb
 *.rpm
 *.snap
+*.appimage
+*.dmg
+*.pkg
 *.msi
-*.dll
-*.so
+*.exe
+*.app
 *.zip
 *.tar.gz
 *.tgz
-# VSCode
+*.rar
+*.7z
+
+# Electron build artifacts
+*.asar
+*.bin
+*.dll
+*.so
+*.dylib
+
+# Archivos temporales del sistema
+.env
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Archivos de respaldo
+*.bak
+*.backup
+*.old
+
+# Archivos de configuración específicos del usuario
+config.local.json
+.env.local
+
+# Cache y datos temporales
+.cache/
+.electron/
+.nyc_output/
+
+# VSCode y otros editores
 .vscode/
+.idea/
+*.sublime-*
+
+# Python (para el venv que tienes)
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Archivos de sistema Linux
+.directory
+*.desktop.bak

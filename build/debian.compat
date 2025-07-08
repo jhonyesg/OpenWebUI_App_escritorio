@@ -1,0 +1,16 @@
+# Archivo de configuración para permisos del paquete .deb
+
+# Solicitar acceso a audio
+debian/openwebui-desktop.substvars
+
+# Dependencias recomendadas
+recommends=ffmpeg, pulseaudio | libasound2
+
+# Permisos para Electron en Linux
+Package: openwebui-desktop
+Version: 1.0.0
+Depends: libnotify4, libxtst6, libnss3, libsecret-1-0
+Recommends: pulseaudio | libasound2, ffmpeg
+Description: Cliente de escritorio para OpenWeb UI
+ Aplicación de escritorio para acceder a OpenWeb UI
+ con notificaciones y configuración avanzada.
